@@ -26,7 +26,7 @@ export default function ShareButton() {
   return (
     <Button
       variant="outline"
-      className="rounded-full border-gray-600 text-white hover:bg-gray-800 hidden md:flex"
+      className="rounded-full border-gray-600 text-white hover:bg-gray-800  flex"
       onClick={handleShare}
     >
       <Share2 className="h-4 w-4 mr-2" />

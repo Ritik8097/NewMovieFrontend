@@ -174,10 +174,10 @@ export default async function MoviePage({ params }: { params: { id: string } }) 
               Watch
             </Link>
           </Button>
-          <Button variant="outline" className="rounded-full border-gray-600 text-white hover:bg-gray-800">
+          {/* <Button variant="outline" className="rounded-full border-gray-600 text-white hover:bg-gray-800">
             <Plus className="h-4 w-4 mr-2" />
             Watchlist
-          </Button>
+          </Button> */}
           <ShareButton/>
           {/* <Button
             variant="outline"
