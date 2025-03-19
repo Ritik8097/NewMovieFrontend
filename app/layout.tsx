@@ -7,9 +7,9 @@ import { ThemeProvider } from "@/components/theme-provider"
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "JioHotstar Clone",
-  description: "A frontend clone of JioHotstar streaming platform",
-    generator: 'v0.dev'
+  title: "Movie Hub By Ritik",
+  description: "Movie Streaming Website",
+   
 }
 
 export default function RootLayout({
