@@ -3,7 +3,10 @@ import Link from "next/link"
 import Image from "next/image"
 import { Search, Bell, User, ChevronDown, Play, Plus } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import Loading from "../components/loading"
+import { Suspense } from "react";
+
 
 
 // Define the Video type based on the API response
@@ -26,8 +29,9 @@ interface ApiResponse {
 
 // Fetch videos from the API
 async function getVideos(): Promise<Video[]> {
- 
+  
   try {
+   
     const response = await fetch("https://hotstar-backend-2025-production.up.railway.app/api/all", {
       next: { revalidate: 3600 },
     })
@@ -43,11 +47,15 @@ async function getVideos(): Promise<Video[]> {
     console.error("Error fetching videos:", error)
     return []
   }
+  
 }
 
-export default async function HomePage() {
-  const videos = await getVideos()
 
+export default async function HomePage() {
+ 
+  const videos = await getVideos()
+ 
+ 
   // Create different categories by slicing the videos array
   const featuredVideo = videos[0]
   const continueWatching = videos.slice(0, 5)
@@ -56,6 +64,8 @@ export default async function HomePage() {
   const newReleases = videos.slice(0, 5).reverse()
 
   return (
+    <Suspense fallback={<Loading/>}>
+
     <div className="min-h-screen bg-black text-white">
       {/* Header */}
       <header className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-4 md:px-8 py-3 bg-gradient-to-b from-black/80 to-transparent">
@@ -457,6 +467,7 @@ export default async function HomePage() {
         </div>
       </footer>
     </div>
+    </Suspense>
   )
 }
 
