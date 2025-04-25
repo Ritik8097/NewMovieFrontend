@@ -4,7 +4,7 @@ import Image from "next/image"
 import { Search, Bell, User, ChevronDown, Play, Plus } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import Loading from "../components/loading"
+import Loading from "../components/Loading"
 import { Suspense } from "react";
 
 
