@@ -19,6 +19,7 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { notFound } from "next/navigation"
 import { useEffect, useState } from "react"
+import { use } from 'react';
 
 import dynamic from "next/dynamic"
 
@@ -35,23 +36,25 @@ interface Video {
   __v: number
 }
 
-export default function WatchPage({ params }: { params: { id: string } }) {
+export default function WatchPage({ params }: { params: Promise<{ id: string }> }) {
   const [video, setVideo] = useState<Video | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-
+  const {id} = use(params);
   useEffect(() => {
     const fetchVideo = async () => {
+     
       try {
+      
         setLoading(true)
-        const response = await fetch("https://movie-frontend-production.up.railway.app/api/video/")
+        const response = await fetch("https://hotstar-backend-2025-production.up.railway.app/api/all")
 
         if (!response.ok) {
           throw new Error("Failed to fetch videos")
         }
 
         const data = await response.json()
-        const foundVideo = data.videos.find((v: Video) => v._id === params.id)
+        const foundVideo = data.find((v: Video) => v._id === id)
 
         if (foundVideo) {
           setVideo(foundVideo)
@@ -67,7 +70,7 @@ export default function WatchPage({ params }: { params: { id: string } }) {
     }
 
     fetchVideo()
-  }, [params.id])
+  }, [id])
 
   if (loading) {
     return (
@@ -142,7 +145,7 @@ export default function WatchPage({ params }: { params: { id: string } }) {
       {/* Back button */}
       <div className="p-[4rem]">
         <Button variant="ghost" size="icon" className="text-white" asChild>
-          <Link href={`/movie/${params.id}`}>
+          <Link href={`/movie/${id}`}>
             <ArrowLeft className="h-6 w-6" />
           </Link>
         </Button>
@@ -152,8 +155,8 @@ export default function WatchPage({ params }: { params: { id: string } }) {
       <div className="flex-1 flex items-center justify-center">
         <div className="w-full h-full max-w-7xl mx-auto">
           <VideoPlayer
-            src={video.videoUrl}
-            poster={video.thumbnailUrl}
+            src={video.playableUrl}
+            poster={video.trailerUrlVideo}
             autoPlay={true}
             controls={true}
             className="max-h-[calc(100vh-100px)]"
@@ -169,4 +172,3 @@ export default function WatchPage({ params }: { params: { id: string } }) {
     </>
   )
 }
-

@@ -1,0 +1,11 @@
+#body{
+    background-color: black !important;
+}
+.container {
+    margin: 20px auto;
+    box-shadow: #0000008a 0 0 40px;
+    border-radius: 5px;
+    overflow: hidden;
+    padding-top: 0 !important;
+    position: unset !important;
+}

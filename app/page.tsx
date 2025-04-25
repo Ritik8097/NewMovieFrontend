@@ -1,8 +1,10 @@
+
 import Link from "next/link"
 import Image from "next/image"
 import { Search, Bell, User, ChevronDown, Play, Plus } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+
 
 // Define the Video type based on the API response
 interface Video {
@@ -24,15 +26,19 @@ interface ApiResponse {
 
 // Fetch videos from the API
 async function getVideos(): Promise<Video[]> {
+ 
   try {
-    const response = await fetch("https://movie-frontend-production.up.railway.app/api/video/", {
+    const response = await fetch("https://hotstar-backend-2025-production.up.railway.app/api/all", {
       next: { revalidate: 3600 },
     })
     if (!response.ok) {
       throw new Error("Failed to fetch videos")
     }
     const data: ApiResponse = await response.json()
-    return data.videos
+    console.log(data)
+  
+    return data
+    
   } catch (error) {
     console.error("Error fetching videos:", error)
     return []
@@ -102,10 +108,10 @@ export default async function HomePage() {
       </header>
 
       {/* Hero Banner */}
-      {featuredVideo && (
+      {featuredVideo ? (
         <div className="relative pt-16 h-[80vh]">
           <Image
-            src={featuredVideo.thumbnailUrl || "/placeholder.svg"}
+            src={featuredVideo.trailerUrlVideo }
             alt={featuredVideo.title}
             fill
             className="object-cover"
@@ -114,14 +120,14 @@ export default async function HomePage() {
           <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent" />
           <div className="absolute bottom-0 left-0 p-8 md:p-16 w-full md:w-1/2 space-y-4">
             <div className="flex items-center gap-2 text-sm">
-              <span className="bg-blue-600 px-2 py-0.5 rounded text-xs">PREMIUM</span>
-              <span>Movie</span>
+              <span className="bg-blue-600 px-2 py-0.5 rounded text-xs  capitalize">{featuredVideo.categoryType}</span>
+              <span className=" capitalize">{featuredVideo.category}</span>
               <span>•</span>
-              <span>{new Date(featuredVideo.createdAt).getFullYear()}</span>
+              <span style={{background:" hsla(0, 0%, 100%, .2)", padding:"0px 3px", borderRadius:"4px"}}>{featuredVideo.yearRequiredToWatch }+</span>
             </div>
             <h1 className="text-4xl md:text-5xl font-bold">{featuredVideo.title}</h1>
             <p className="text-sm md:text-base text-gray-300">
-              Watch this exciting movie with premium quality streaming.
+             {featuredVideo.videoDescription}
             </p>
             <div className="flex items-center gap-4 pt-2">
               <Button className="bg-blue-600 hover:bg-blue-700 rounded-full px-6" asChild>
@@ -137,7 +143,45 @@ export default async function HomePage() {
             </div>
           </div>
         </div>
-      )}
+      )
+      :
+      <div className="relative pt-16 h-[80vh] animate-pulse">
+      <Image
+        src="w"
+        alt={featuredVideo.title}
+        fill
+        className="object-cover bg-gray-200"
+        priority
+      />
+      <div className="absolute   inset-0 bg-gradient-to-t from-black via-black/50 to-transparent" />
+      <div className="absolute   bottom-0 left-0 p-8 md:p-16 w-full md:w-1/2 space-y-4">
+        <div className="flex w-[30%]  rounded   bg-gray-200 items-center gap-2 text-sm">
+          <span className="bg-blue-600 px-2 py-0.5 rounded text-xs  bg-gray-200  capitalize"></span>
+          <span className=" bg-gray-100 capitalize"></span>
+          <span className=" h-3 w-4"></span>
+          <span className=" bg-gray-200" style={{background:" hsla(0, 0%, 100%, .2)", padding:"0px 3px", borderRadius:"4px"}}></span>
+        </div>
+        <h1 className="text-4xl md:text-5xl font-bold h-[20px] rounded bg-gray-200"></h1>
+        <p className="text-sm md:text-base  bg-gray-200 h-[40px] rounded text-gray-300">
+     
+        </p>
+        <div className="flex items-center gap-4 pt-2">
+          <Button className=" w-[30%]  bg-gray-200 hover:bg-blue-700 rounded-full px-6" asChild>
+            <Link href="">
+             
+              
+            </Link>
+          </Button>
+          <Button  bg-gray-200 variant="outline" className="rounded-full w-[40%]  bg-gray-200 text-black hover:bg-gray-800">
+           
+            
+          </Button>
+        </div>
+      </div>
+    </div>
+    
+    
+    }
 
       {/* Content Tabs */}
       <div className="px-4 md:px-8 py-6">
@@ -170,61 +214,41 @@ export default async function HomePage() {
           </TabsList>
           <TabsContent value="all" className="mt-6">
             {/* Continue Watching */}
-            <div className="mb-8">
-              <h2 className="text-xl font-bold mb-4">Continue Watching</h2>
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-                {continueWatching.map((video) => (
-                  <Link href={`/movie/${video._id}`} key={video._id} className="group relative">
-                    <div className="aspect-video rounded-lg overflow-hidden">
-                      <Image
-                        src={video.thumbnailUrl || "/placeholder.svg"}
-                        alt={video.title}
-                        width={480}
-                        height={270}
-                        className="object-cover group-hover:scale-105 transition-transform duration-300"
-                      />
-                    </div>
-                    <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black p-3">
-                      <div className="flex items-center justify-between">
-                        <h3 className="text-sm font-medium truncate">{video.title}</h3>
-                        <div className="bg-black/60 rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                          <Play className="h-4 w-4" />
-                        </div>
-                      </div>
-                      <div className="w-full bg-gray-700 h-1 mt-2 rounded-full overflow-hidden">
-                        <div
-                          className="bg-blue-600 h-full rounded-full"
-                          style={{ width: `${Math.random() * 100}%` }}
-                        ></div>
-                      </div>
-                    </div>
-                  </Link>
-                ))}
-              </div>
-            </div>
+          
 
             {/* Trending Now */}
             <div className="mb-8">
               <h2 className="text-xl font-bold mb-4">Trending Now</h2>
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-                {trendingNow.map((video) => (
-                  <Link href={`/movie/${video._id}`} key={video._id} className="group">
-                    <div className=" w-full h-[250px] md:h-[200px] rounded-lg overflow-hidden relative">
-                      <img
-                        src={video.thumbnailUrl || "/placeholder.svg"}
-                        alt={video.title}
-                       
-                        className="object-cover group-hover:scale-105 transition-transform duration-300 h-full w-full"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-100 group-hover:opacity-100 transition-opacity flex items-end p-3">
-                        <div>
-                          <h3 className="text-sm font-medium">{video.title}</h3>
-                          <p className="text-xs text-gray-300">{new Date(video.createdAt).getFullYear()} • Movie</p>
-                        </div>
-                      </div>
-                    </div>
-                  </Link>
-                ))}
+              {!trendingNow || trendingNow.length === 0 ? (
+  // Show skeletons if data is empty or undefined
+  Array.from({ length: 4 }).map((_, idx) => (
+    <div
+      key={idx}
+      className="w-full h-[250px] md:h-[200px] rounded-lg bg-gray-800 animate-pulse"
+    />
+  ))
+) : (
+  // Render actual videos
+  trendingNow.map((video) => (
+    <Link href={`/movie/${video._id}`} key={video._id} className="group">
+      <div className="w-full h-[250px] md:h-[200px] rounded-lg overflow-hidden relative">
+        <img
+          src={video.imageUrl|| "/placeholder.svg"}
+          alt={video.title}
+          className="object-cover group-hover:scale-105 transition-transform duration-300 h-full w-full"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-100 group-hover:opacity-100 transition-opacity flex items-end p-3">
+          <div>
+            <h3 className="text-sm font-medium text-white">{video.title}</h3>
+            <p className="text-xs text-gray-300">{video.yearPublished} • Movie</p>
+          </div>
+        </div>
+      </div>
+    </Link>
+  ))
+)}
+
               </div>
             </div>
 

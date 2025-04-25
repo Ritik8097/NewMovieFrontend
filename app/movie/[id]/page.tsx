@@ -41,12 +41,12 @@ interface ApiResponse {
 // Fetch all videos from the API
 async function getVideos(): Promise<Video[]> {
   try {
-    const response = await fetch("https://movie-frontend-production.up.railway.app/api/video/")
+    const response = await fetch("https://hotstar-backend-2025-production.up.railway.app/api/all")
     if (!response.ok) {
       throw new Error("Failed to fetch videos")
     }
     const data: ApiResponse = await response.json()
-    return data.videos
+    return data
   } catch (error) {
     console.error("Error fetching videos:", error)
     return []
@@ -66,7 +66,7 @@ async function getVideoById(id: string): Promise<Video | null> {
 }
 
 export default async function MoviePage({ params }: { params: { id: string } }) {
-  const movieId = params.id
+  const movieId =await params.id
   const video = await getVideoById(movieId)
 
   if (!video) {
@@ -153,7 +153,7 @@ export default async function MoviePage({ params }: { params: { id: string } }) 
       {/* Hero Banner */}
       <div className="relative pt-16 h-[70vh]">
         <Image
-          src={video.thumbnailUrl || "/placeholder.svg"}
+          src={video.trailerUrlVideo || "/placeholder.svg"}
           alt={video.title}
           fill
           className="object-cover"
@@ -163,11 +163,11 @@ export default async function MoviePage({ params }: { params: { id: string } }) 
 
         {/* Movie Logo */}
         <div className="absolute bottom-[20%] left-8 md:left-16 w-1/2 md:w-1/3">
-          <h1 className="text-4xl md:text-5xl font-bold">{video.title}</h1>
+          <Image src={video.imageUrlForTitle || "/placeholder-logo.svg"} alt={`${video.title} Logo`} width={150} height={100} />
         </div>
 
         {/* Action Buttons */}
-        <div className="absolute bottom-8 left-8 md:left-16 flex flex-wrap gap-3 md:gap-4">
+        <div className="absolute bottom-8 left-[1rem] md:left-16 flex flex-wrap gap-3 md:gap-4">
           <Button className="bg-white text-black hover:bg-gray-200 rounded-full px-6 md:px-8" asChild>
             <Link href={`/movie/${video._id}/watch`} >
               <Play className="h-4 w-4 mr-2" />
@@ -196,28 +196,25 @@ export default async function MoviePage({ params }: { params: { id: string } }) 
             {/* Title and Metadata */}
             <div>
               <div className="flex items-center gap-2 text-sm mb-2 flex-wrap">
-                <Badge className="bg-blue-600 hover:bg-blue-700">PREMIUM</Badge>
-                <span className="text-gray-400">{year}</span>
+                <Badge className="bg-blue-600 hover:bg-blue-700 capitalize">{video.categoryType}</Badge>
+                <span className="text-gray-400">{video.yearPublished}</span>
                 <span className="text-gray-400">•</span>
-                <span className="text-gray-400">2h 15m</span>
+                <span className="text-gray-400">{video.videoHrsTime}</span>
                 <span className="text-gray-400">•</span>
-                <span className="text-gray-400">U/A 16+</span>
+                <span className="text-gray-400" style={{background:" hsla(0, 0%, 100%, .2)", padding:"0px 3px", borderRadius:"4px"}}>U/A {video.yearRequiredToWatch}+</span>
                 <span className="text-gray-400">•</span>
                 <span className="text-gray-400">4K</span>
               </div>
               <h1 className="text-2xl md:text-3xl font-bold">{video.title}</h1>
               <div className="flex items-center gap-4 mt-2">
-                <div className="flex items-center">
-                  <Star className="h-4 w-4 text-yellow-500 fill-yellow-500" />
-                  <span className="ml-1 text-sm">8.5/10</span>
-                </div>
+                
                 <div className="flex items-center text-sm text-gray-400">
                   <Clock className="h-4 w-4 mr-1" />
-                  <span>2h 15m</span>
+                  <span>{video.videoHrsTime}</span>
                 </div>
                 <div className="flex items-center text-sm text-gray-400">
                   <Calendar className="h-4 w-4 mr-1" />
-                  <span>{year}</span>
+                  <span>{video.yearPublished}</span>
                 </div>
               </div>
             </div>
@@ -242,9 +239,7 @@ export default async function MoviePage({ params }: { params: { id: string } }) 
             <div>
               <h2 className="text-lg font-semibold mb-2">About the movie</h2>
               <p className="text-gray-300">
-                {video.title} is an exciting movie that you can stream in high quality. This premium content is
-                available for streaming directly from our platform. Watch and enjoy this thrilling adventure with
-                friends and family.
+                {video.videoDescription} 
               </p>
             </div>
 
@@ -285,7 +280,7 @@ export default async function MoviePage({ params }: { params: { id: string } }) 
               <h2 className="text-lg font-semibold mb-3">Watch Trailer</h2>
               <div className="aspect-video relative rounded-lg overflow-hidden">
                 <Image
-                  src={video.thumbnailUrl || "/placeholder.svg"}
+                  src={video.imageUrl || "/placeholder.svg"}
                   alt={`${video.title} Trailer`}
                   width={480}
                   height={270}
@@ -306,7 +301,7 @@ export default async function MoviePage({ params }: { params: { id: string } }) 
               <h2 className="text-lg font-semibold mb-3">More Info</h2>
               <div className="space-y-2 text-sm">
                 <p>
-                  <span className="text-gray-400">Audio:</span> English, Hindi, Tamil, Telugu
+                  <span className="text-gray-400">Audio:</span> Hindi
                 </p>
                 <p>
                   <span className="text-gray-400">Subtitles:</span> English, Hindi
@@ -315,11 +310,9 @@ export default async function MoviePage({ params }: { params: { id: string } }) 
                   <span className="text-gray-400">Audio Quality:</span> Dolby Digital 5.1
                 </p>
                 <p>
-                  <span className="text-gray-400">Video Quality:</span> 4K, HDR
+                  <span className="text-gray-400">Video Quality: FHD</span> 
                 </p>
-                <p>
-                  <span className="text-gray-400">Release Date:</span> {releaseDate}
-                </p>
+                
               </div>
             </div>
           </div>
@@ -334,7 +327,7 @@ export default async function MoviePage({ params }: { params: { id: string } }) 
             <Link href={`/movie/${relatedVideo._id}`} key={relatedVideo._id} className="group">
               <div className=" w-full h-[250px] md:h-[200px] rounded-lg overflow-hidden relative">
                 <img
-                  src={relatedVideo.thumbnailUrl || "/placeholder.svg"}
+                  src={relatedVideo.imageUrl|| "/placeholder.svg"}
                   alt={relatedVideo.title}
                  
                   className="object-cover group-hover:scale-105 transition-transform duration-300 h-full w-full"
@@ -342,7 +335,7 @@ export default async function MoviePage({ params }: { params: { id: string } }) 
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-100 group-hover:opacity-100 transition-opacity flex items-end p-3">
                   <div>
                     <h3 className="text-sm font-medium">{relatedVideo.title}</h3>
-                    <p className="text-xs text-gray-300">{new Date(relatedVideo.createdAt).getFullYear()} • Movie</p>
+                    <p className="text-xs text-gray-300 capitalize">{relatedVideo.categoryType} • {relatedVideo.videoHrsTime}</p>
                   </div>
                 </div>
               </div>
